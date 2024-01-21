@@ -88,7 +88,9 @@ function Quiz() {
   };
 
   if (isLoading) {
-    return <div className="loader"></div>
+    return <div className='loader-container'>
+      <div className="loader"></div>
+    </div>
   }
 
   if (error) {
@@ -99,7 +101,7 @@ function Quiz() {
     // 퀴즈가 아직 시작되지 않았을 때 렌더링 될 스타트 페이지
     return (
       <div className="Quiz-start-page">
-        <h1>Welcome</h1>
+        <h1>Test Your Knowledge!</h1>
         <button onClick={startQuiz}>Start Quiz</button>
       </div>
     );
