@@ -23,55 +23,6 @@ function Quiz() {
     }
   };
 
-
-  // 현재 질문 인덱스가 변경될 때마다 타이머를 재설정합니다.
-  useEffect(() => {
-    setTimeLeft(30); // 각 질문마다 타이머를 30초로 재설정합니다.
-  }, [currentQuestionIndex]);
-
-  // 타이머를 처리하는 useEffect
-  useEffect(() => {
-    let timerId;
-  
-    if (isQuizStarted && timeLeft > 0) {
-      // 타이머가 실행중일 때만 인터벌을 설정합니다.
-      timerId = setTimeout(() => {
-        setTimeLeft(timeLeft - 1);
-      }, 1000);
-    }
-  
-    // 타이머가 0이 되면 자동으로 다음 질문으로 이동합니다.
-    if (isQuizStarted && timeLeft === 0) {
-      goToNextQuestion();
-    }
-  
-    // 컴포넌트 언마운트 시 또는 타이머가 0에 도달했을 때 인터벌을 클리어합니다.
-    return () => {
-      if (timerId) clearTimeout(timerId);
-    };
-  }, [timeLeft, isQuizStarted, goToNextQuestion]);
-
-  useEffect(() => {
-    const setupQuiz = async () => {
-      try {
-        setIsLoading(true); // Start loading
-        setError(null); // Initialise the error
-        const token = await requestToken();
-        if (token) {
-          const newQuestions = await getQuizData(10, token);
-          setQuestions(newQuestions);
-          setUserAnswers(new Array(newQuestions.length).fill(null));
-        }
-      } catch (error) {
-        setError(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    setupQuiz();
-  }, []);
-
   const startQuiz = async () => {
     setIsLoading(true);
     setError(null);
@@ -86,27 +37,6 @@ function Quiz() {
     }
     setIsLoading(false);
   };
-
-  if (isLoading) {
-    return <div className='loader-container'>
-      <div className="loader"></div>
-    </div>
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
-  if (!isQuizStarted) {
-    // 퀴즈가 아직 시작되지 않았을 때 렌더링 될 스타트 페이지
-    return (
-      <div className="Quiz-start-page">
-        <h1>Test Your Knowledge!</h1>
-        <button onClick={startQuiz}>Start Quiz</button>
-      </div>
-    );
-  }
-
 
 
   const handleAnswerClick = (answer) => {
@@ -141,13 +71,86 @@ function Quiz() {
   };
 
 
-
   const restartQuiz = () => {
     setShowResults(false);
     setCurrentQuestionIndex(0);
     setUserAnswers(new Array(questions.length).fill(null));
     setScore(0);
   };
+
+  useEffect(() => {
+    const setupQuiz = async () => {
+      try {
+        setIsLoading(true); // Start loading
+        setError(null); // Initialise the error
+        const token = await requestToken();
+        if (token) {
+          const newQuestions = await getQuizData(10, token);
+          setQuestions(newQuestions);
+          setUserAnswers(new Array(newQuestions.length).fill(null));
+        }
+      } catch (error) {
+        setError(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    setupQuiz();
+  }, []);
+
+
+
+  // 현재 질문 인덱스가 변경될 때마다 타이머를 재설정합니다.
+  useEffect(() => {
+    setTimeLeft(30); // 각 질문마다 타이머를 30초로 재설정합니다.
+  }, [currentQuestionIndex]);
+
+  // 타이머를 처리하는 useEffect
+  useEffect(() => {
+    let timerId;
+  
+    if (isQuizStarted && timeLeft > 0) {
+      // 타이머가 실행중일 때만 인터벌을 설정합니다.
+      timerId = setTimeout(() => {
+        setTimeLeft(timeLeft - 1);
+      }, 1000);
+    }
+  
+    // 타이머가 0이 되면 자동으로 다음 질문으로 이동합니다.
+    if (isQuizStarted && timeLeft === 0) {
+      goToNextQuestion();
+    }
+  
+    // 컴포넌트 언마운트 시 또는 타이머가 0에 도달했을 때 인터벌을 클리어합니다.
+    return () => {
+      if (timerId) clearTimeout(timerId);
+    };
+  }, [timeLeft, isQuizStarted]);
+
+
+ 
+
+  if (isLoading) {
+    return <div className='loader-container'>
+      <div className="loader"></div>
+    </div>
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!isQuizStarted) {
+    // 퀴즈가 아직 시작되지 않았을 때 렌더링 될 스타트 페이지
+    return (
+      <div className="Quiz-start-page">
+        <h1>Test Your Knowledge!</h1>
+        <button onClick={startQuiz}>Start Quiz</button>
+      </div>
+    );
+  }
+
 
   return (
     <div className="Quiz">
@@ -168,16 +171,17 @@ function Quiz() {
                 </div>
                 <div className="Quiz-options">
                   {questions[currentQuestionIndex].incorrect_answers.concat(questions[currentQuestionIndex].correct_answer).map((answer, index) => {
-                    const isSelected = userAnswers[currentQuestionIndex] === answer;
-                    const buttonClass = isSelected
-                      ? (answer === questions[currentQuestionIndex].correct_answer ? 'correct' : 'incorrect')
-                      : '';
+                    const isSelected = userAnswers[currentQuestionIndex]?.answer === answer;
+                    let buttonClass = 'answer-button'; // default class for answer buttons
+                    if (isSelected) {
+                      buttonClass += userAnswers[currentQuestionIndex].isCorrect ? ' correct' : ' incorrect';
+                    }
                     return (
                       <button
                         key={index}
                         className={buttonClass}
                         onClick={() => handleAnswerClick(answer)}
-                        disabled={userAnswers[currentQuestionIndex] !== null}
+                        disabled={!!userAnswers[currentQuestionIndex]}
                       >
                         {answer}
                       </button>
@@ -204,5 +208,6 @@ function Quiz() {
     </div>
   );
 }
+
 
 export default Quiz;

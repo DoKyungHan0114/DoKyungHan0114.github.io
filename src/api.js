@@ -53,7 +53,7 @@ export const getQuizData = async (amount = 10, token) => {
           correct_answer: htmlDecode(question.correct_answer),
           incorrect_answers: question.incorrect_answers.map(htmlDecode),
         })));
-      }, 4000); // 3000ms delay
+      }, 4000); // 4000ms delay
     });
     
   } catch (error) {

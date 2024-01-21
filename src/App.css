@@ -97,9 +97,7 @@
   transition: background-color 0.3s ease;
 }
 
-.Quiz-options button:hover {
-  background-color: #f4f4f4;
-}
+
 
 button:disabled {
   cursor: not-allowed;
@@ -121,18 +119,22 @@ button {
   font-size: 16px;
 }
 
-button:hover {
-  background-color: rgb(27, 116, 218);
+
+.answer-button {
+  /* 기본 스타일 */
 }
 
-button.correct {
-  background-color: rgb(12, 233, 141);
-  color: white;
+.answer-button.correct {
+  background-color: lightgreen; /* 정답일 때의 배경색 */
 }
 
-button.incorrect {
-  background-color: red;
-  color: white;
+.answer-button.incorrect {
+  background-color: lightcoral; /* 오답일 때의 배경색 */
+}
+
+.answer-button.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .Quiz-timer {
