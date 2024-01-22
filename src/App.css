@@ -121,15 +121,15 @@ button {
 
 
 .answer-button {
-  /* 기본 스타일 */
+  
 }
 
 .answer-button.correct {
-  background-color: lightgreen; /* 정답일 때의 배경색 */
+  background-color: lightgreen; 
 }
 
 .answer-button.incorrect {
-  background-color: lightcoral; /* 오답일 때의 배경색 */
+  background-color: lightcoral; 
 }
 
 .answer-button.disabled {

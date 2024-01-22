@@ -1,6 +1,8 @@
 # Quiz App
 
-This project is a quiz app designed to test the user's knowledge through a series of questions and answers. Users can start the quiz, answer various questions, and see how well they score. Each question is timed, and if not answered within the time limit, the app automatically moves to the next question.
+This project is a quiz app designed to test the user's knowledge through a series of questions and answers. 
+Users can start the quiz, answer various questions, and see how well they score. 
+Each question is timed, and if not answered within the time limit, the app automatically moves to the next question.
 
 ## Features
 

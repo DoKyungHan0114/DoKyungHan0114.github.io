@@ -14,7 +14,7 @@ function Quiz() {
   const [timeLeft, setTimeLeft] = useState(30);
   const [isQuizStarted, setIsQuizStarted] = useState(false);
 
-
+  
   const goToNextQuestion = () => {
     const nextQuestionIndex = currentQuestionIndex + 1;
     if (nextQuestionIndex < questions.length) {
@@ -104,28 +104,27 @@ function Quiz() {
 
 
 
-  // 현재 질문 인덱스가 변경될 때마다 타이머를 재설정합니다.
+  // Reset timer when index is changed
   useEffect(() => {
-    setTimeLeft(30); // 각 질문마다 타이머를 30초로 재설정합니다.
+    setTimeLeft(30); // set timer for 30s
   }, [currentQuestionIndex]);
 
-  // 타이머를 처리하는 useEffect
+  // useEffect for handling timer
   useEffect(() => {
     let timerId;
 
-    if (isQuizStarted && timeLeft > 0) {
-      // 타이머가 실행중일 때만 인터벌을 설정합니다.
+    if (isQuizStarted && timeLeft > 0) {      
       timerId = setTimeout(() => {
         setTimeLeft(timeLeft - 1);
       }, 1000);
     }
 
-    // 타이머가 0이 되면 자동으로 다음 질문으로 이동합니다.
+    // Move to next question if timeout
     if (isQuizStarted && timeLeft === 0) {
       goToNextQuestion();
     }
 
-    // 컴포넌트 언마운트 시 또는 타이머가 0에 도달했을 때 인터벌을 클리어합니다.
+    // Clear timer
     return () => {
       if (timerId) clearTimeout(timerId);
     };
@@ -135,6 +134,7 @@ function Quiz() {
 
 
   if (isLoading) {
+    // Show loader when page is loaded
     return <div className='loader-container'>
       <div className="loader"></div>
     </div>
@@ -145,7 +145,7 @@ function Quiz() {
   }
 
   if (!isQuizStarted) {
-    // 퀴즈가 아직 시작되지 않았을 때 렌더링 될 스타트 페이지
+    // Rendering Start page (Welcome page)
     return (
       <div className="Quiz-start-page">
         <h1>Test Your Knowledge!</h1>
@@ -210,11 +210,13 @@ function Quiz() {
   return (
     <div className="Quiz">
       {showResults ? (
+        // Results Screen: Displays the user's score and provides a button to restart the quiz
         <div className="Quiz-results">
           <div>Your score is {score} out of {questions.length}.</div>
           <button onClick={restartQuiz}>Restart Quiz</button>
         </div>
       ) : (
+        // Quiz Question Screen: Includes the timer, current question, answer options, and navigation buttons
         <>
           <div className="Quiz-timer">Time left: {timeLeft} seconds</div>
           <div className="Quiz-question">
@@ -242,11 +244,6 @@ function Quiz() {
     </div>
   );
 }
-
-
-
-
-
 
 
 export default Quiz;
