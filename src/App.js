@@ -3,14 +3,15 @@ import './App.css';
 import { requestToken, getQuizData } from './api';
 
 function Quiz() {
-  const [questions, setQuestions] = useState([]); // Set state for storing questions
+  // Declaration for states
+  const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState([]);
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Loading
-  const [error, setError] = useState(null); // Error
-  const [timeLeft, setTimeLeft] = useState(30); // 타이머 상태를 추가합니다.
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(30);
   const [isQuizStarted, setIsQuizStarted] = useState(false);
 
 
@@ -19,7 +20,7 @@ function Quiz() {
     if (nextQuestionIndex < questions.length) {
       setCurrentQuestionIndex(nextQuestionIndex);
     } else {
-      setShowResults(true); // 마지막 질문에 답변 후 결과를 표시
+      setShowResults(true);
     }
   };
 
@@ -31,7 +32,7 @@ function Quiz() {
       const newQuestions = await getQuizData(10, token);
       setQuestions(newQuestions);
       setUserAnswers(new Array(newQuestions.length).fill(null));
-      setIsQuizStarted(true); 
+      setIsQuizStarted(true);
     } else {
       setError('Failed to get the quiz data. Please try again.');
     }
@@ -43,16 +44,16 @@ function Quiz() {
     const newUserAnswers = [...userAnswers];
     const correctAnswer = questions[currentQuestionIndex].correct_answer;
     const isCorrect = answer === correctAnswer;
-  
+
     // Save answers
     newUserAnswers[currentQuestionIndex] = { answer, isCorrect };
     setUserAnswers(newUserAnswers);
-  
+
     // Update score
     if (isCorrect) {
       setScore(score + 1);
     }
-  
+
     // Go to next question or exit if it is the last question
     setTimeout(() => {
       const nextQuestionIndex = currentQuestionIndex + 1;
@@ -63,7 +64,7 @@ function Quiz() {
       }
     }, 1000); // delay for 1000 ms
   };
-  
+
 
   const goToPreviousQuestion = () => {
     const prevQuestionIndex = currentQuestionIndex - 1;
@@ -111,19 +112,19 @@ function Quiz() {
   // 타이머를 처리하는 useEffect
   useEffect(() => {
     let timerId;
-  
+
     if (isQuizStarted && timeLeft > 0) {
       // 타이머가 실행중일 때만 인터벌을 설정합니다.
       timerId = setTimeout(() => {
         setTimeLeft(timeLeft - 1);
       }, 1000);
     }
-  
+
     // 타이머가 0이 되면 자동으로 다음 질문으로 이동합니다.
     if (isQuizStarted && timeLeft === 0) {
       goToNextQuestion();
     }
-  
+
     // 컴포넌트 언마운트 시 또는 타이머가 0에 도달했을 때 인터벌을 클리어합니다.
     return () => {
       if (timerId) clearTimeout(timerId);
@@ -131,7 +132,7 @@ function Quiz() {
   }, [timeLeft, isQuizStarted]);
 
 
- 
+
 
   if (isLoading) {
     return <div className='loader-container'>
@@ -153,7 +154,59 @@ function Quiz() {
     );
   }
 
+  // Components implementation section
 
+  function QuizOptions({ answers, userAnswer, onAnswerClick, correctAnswer }) {
+    return (
+      <div className="Quiz-options">
+        {answers.map((answer, index) => {
+          const isSelected = userAnswer?.answer === answer;
+          let buttonClass = 'answer-button'; // default class for answer buttons
+
+          if (isSelected) {
+            if (userAnswer.isCorrect) {
+              buttonClass += ' correct'; // Highlight selected correct answer
+            } else {
+              buttonClass += ' incorrect'; // Highlight selected incorrect answer
+            }
+          } else if (answer === correctAnswer && userAnswer && !userAnswer.isCorrect) {
+            buttonClass += ' correct'; // Highlight correct answer if a wrong answer is selected
+          }
+
+          return (
+            <button
+              key={index}
+              className={buttonClass}
+              onClick={() => onAnswerClick(answer)}
+              disabled={!!userAnswer}
+            >
+              {answer}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+
+  function QuizNavigation() {
+    return (
+      <div className="Quiz-navigation">
+        {currentQuestionIndex > 0 && (
+          <button onClick={goToPreviousQuestion}>Previous</button>
+        )}
+        {currentQuestionIndex < questions.length - 1 ? (
+          <button onClick={goToNextQuestion}>Next</button>
+        ) : (
+          <button onClick={() => setShowResults(true)}>Show Results</button>
+        )}
+      </div>
+
+    );
+  }
+
+
+
+  // JSX section
   return (
     <div className="Quiz">
       {showResults ? (
@@ -171,35 +224,16 @@ function Quiz() {
                   <div>Question {currentQuestionIndex + 1}/{questions.length}</div>
                   <div className="Quiz-question-text">{questions[currentQuestionIndex].question}</div>
                 </div>
-                <div className="Quiz-options">
-                  {questions[currentQuestionIndex].answers.map((answer, index) => {
-                    const isSelected = userAnswers[currentQuestionIndex]?.answer === answer;
-                    let buttonClass = 'answer-button'; // default class for answer buttons
-                    if (isSelected) {
-                      buttonClass += userAnswers[currentQuestionIndex].isCorrect ? ' correct' : ' incorrect';
-                    }
-                    return (
-                      <button
-                        key={index}
-                        className={buttonClass}
-                        onClick={() => handleAnswerClick(answer)}
-                        disabled={!!userAnswers[currentQuestionIndex]}
-                      >
-                        {answer}
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="Quiz-navigation">
-                  {currentQuestionIndex > 0 && (
-                    <button onClick={goToPreviousQuestion}>Previous</button>
-                  )}
-                  {currentQuestionIndex < questions.length - 1 ? (
-                    <button onClick={goToNextQuestion}>Next</button>
-                  ) : (
-                    <button onClick={() => setShowResults(true)}>Show Results</button>
-                  )}
-                </div>
+
+                <QuizOptions
+                  answers={questions[currentQuestionIndex].answers}
+                  userAnswer={userAnswers[currentQuestionIndex]}
+                  onAnswerClick={handleAnswerClick}
+                  correctAnswer={questions[currentQuestionIndex].correct_answer}
+                />
+
+                <QuizNavigation />
+
               </>
             )}
           </div>
@@ -208,5 +242,11 @@ function Quiz() {
     </div>
   );
 }
+
+
+
+
+
+
 
 export default Quiz;
