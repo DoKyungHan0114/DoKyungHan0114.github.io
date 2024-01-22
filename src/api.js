@@ -6,6 +6,17 @@ export const htmlDecode = (input) => {
   return doc.documentElement.textContent;
 };
 
+// 정답과 오답을 섞는 함수
+function shuffleAnswers(correctAnswer, incorrectAnswers) {
+  const answers = [correctAnswer, ...incorrectAnswers];
+  // Fisher-Yates shuffle 알고리즘
+  for (let i = answers.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [answers[i], answers[j]] = [answers[j], answers[i]];
+  }
+  return answers;
+}
+
 // Request session token
 export const requestToken = async () => {
   try {
@@ -52,6 +63,7 @@ export const getQuizData = async (amount = 10, token) => {
           question: htmlDecode(question.question),
           correct_answer: htmlDecode(question.correct_answer),
           incorrect_answers: question.incorrect_answers.map(htmlDecode),
+          answers: shuffleAnswers(htmlDecode(question.correct_answer), question.incorrect_answers.map(htmlDecode)), // 정답과 오답을 섞어서 answers에 저장
         })));
       }, 4000); // 4000ms delay
     });

@@ -41,17 +41,18 @@ function Quiz() {
 
   const handleAnswerClick = (answer) => {
     const newUserAnswers = [...userAnswers];
-    const isCorrect = answer === questions[currentQuestionIndex].correct_answer;
-
+    const correctAnswer = questions[currentQuestionIndex].correct_answer;
+    const isCorrect = answer === correctAnswer;
+  
     // Save answers
     newUserAnswers[currentQuestionIndex] = { answer, isCorrect };
     setUserAnswers(newUserAnswers);
-
+  
     // Update score
     if (isCorrect) {
       setScore(score + 1);
     }
-
+  
     // Go to next question or exit if it is the last question
     setTimeout(() => {
       const nextQuestionIndex = currentQuestionIndex + 1;
@@ -62,6 +63,7 @@ function Quiz() {
       }
     }, 1000); // delay for 1000 ms
   };
+  
 
   const goToPreviousQuestion = () => {
     const prevQuestionIndex = currentQuestionIndex - 1;
@@ -170,7 +172,7 @@ function Quiz() {
                   <div className="Quiz-question-text">{questions[currentQuestionIndex].question}</div>
                 </div>
                 <div className="Quiz-options">
-                  {questions[currentQuestionIndex].incorrect_answers.concat(questions[currentQuestionIndex].correct_answer).map((answer, index) => {
+                  {questions[currentQuestionIndex].answers.map((answer, index) => {
                     const isSelected = userAnswers[currentQuestionIndex]?.answer === answer;
                     let buttonClass = 'answer-button'; // default class for answer buttons
                     if (isSelected) {
@@ -195,9 +197,7 @@ function Quiz() {
                   {currentQuestionIndex < questions.length - 1 ? (
                     <button onClick={goToNextQuestion}>Next</button>
                   ) : (
-                    <button onClick={() => setShowResults(true)}>
-                      Show Results
-                    </button>
+                    <button onClick={() => setShowResults(true)}>Show Results</button>
                   )}
                 </div>
               </>
@@ -208,6 +208,5 @@ function Quiz() {
     </div>
   );
 }
-
 
 export default Quiz;
