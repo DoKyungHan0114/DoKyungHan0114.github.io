@@ -46,7 +46,7 @@ export const requestToken = async () => {
   }
 };
 
-// Get data from database with added artificial delay
+// Get data from database with added delay
 export const getQuizData = async (amount = 10, token) => {
   try {
     const url = `https://opentdb.com/api.php?amount=${amount}&type=multiple&token=${token}`;
@@ -56,7 +56,7 @@ export const getQuizData = async (amount = 10, token) => {
     }
     const data = await response.json();
     
-    // Artificial delay using setTimeout
+    // Delay using setTimeout
     return new Promise(resolve => {
       setTimeout(() => {
         resolve(data.results.map((question) => ({
