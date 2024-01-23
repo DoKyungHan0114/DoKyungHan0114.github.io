@@ -15,14 +15,6 @@ function Quiz() {
   const [isQuizStarted, setIsQuizStarted] = useState(false);
 
   
-  const goToNextQuestion = () => {
-    const nextQuestionIndex = currentQuestionIndex + 1;
-    if (nextQuestionIndex < questions.length) {
-      setCurrentQuestionIndex(nextQuestionIndex);
-    } else {
-      setShowResults(true);
-    }
-  };
 
   const startQuiz = async () => {
     setIsLoading(true);
@@ -38,6 +30,16 @@ function Quiz() {
     }
     setIsLoading(false);
   };
+
+  const goToNextQuestion = () => {
+    const nextQuestionIndex = currentQuestionIndex + 1;
+    if (nextQuestionIndex < questions.length) {
+      setCurrentQuestionIndex(nextQuestionIndex);
+    } else {
+      setShowResults(true);
+    }
+  };
+
 
 
   const handleAnswerClick = (answer) => {
@@ -205,8 +207,6 @@ function Quiz() {
   }
 
 
-
-  // JSX section
   return (
     <div className="Quiz">
       {showResults ? (
